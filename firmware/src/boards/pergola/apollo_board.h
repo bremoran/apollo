@@ -46,13 +46,12 @@ typedef enum {
  * Debug SPI pin locations.
  */
 enum {
-    PIN_DQS      = _PERGOLA_GPIO(_GPIO1, 0)
+    PIN_DQS      = _PERGOLA_GPIO(_GPIO1, 0),
 	PIN_SCK      = _PERGOLA_GPIO(_GPIO2, 13), // FIXME
 	PIN_FPGA_CS  = _PERGOLA_GPIO(_GPIO2, 0),  // FIXME
-	PIN_DAT0     = _PERGOLA_GPIO(_GPIO2, 3),  // FIXME
-	PIN_DAT1     = _PERGOLA_GPIO(_GPIO2, 1),  // FIXME
-	PIN_DAT2     = _PERGOLA_GPIO(_GPIO2, 2),  // FIXME
-	PIN_DAT3     = _PERGOLA_GPIO(_GPIO2, 4),  // FIXME
+	PIN_SDI      = _PERGOLA_GPIO(_GPIO1, 4), // FIXME
+	PIN_SDO      = _PERGOLA_GPIO(_GPIO1, 4), // FIXME
+
 
 
 	PIN_PROGRAMN = _PERGOLA_GPIO(_GPIO1, 21),

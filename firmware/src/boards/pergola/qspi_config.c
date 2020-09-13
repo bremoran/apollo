@@ -5,7 +5,8 @@
  */
 #include "qspi_config.h"
 #include "fsl_flexspi.h"
-
+#include "fsl_iomuxc.h"
+#include "MIMXRT1011.h"
 
 
 flexspi_device_config_t deviceconfig = {
@@ -44,7 +45,7 @@ const uint32_t customLUT[FPGA_LUT_LENGTH] = {
     /* FIFO Read -SDR */
     [4 * FPGA_CMD_LUT_SEQ_IDX_READ_FIFO_FAST_QUAD] = FLEXSPI_LUT_SEQ(
         kFLEXSPI_Command_SDR, kFLEXSPI_4PAD, 0x11, kFLEXSPI_Command_DATSZ_SDR, kFLEXSPI_4PAD, 0x10),
-    [4 * FPGA_CMD_LUT_SEQ_IDX_WRITE_FIFO_FAST_QUAD + 1] = FLEXSPI_LUT_SEQ(
+    [4 * FPGA_CMD_LUT_SEQ_IDX_READ_FIFO_FAST_QUAD + 1] = FLEXSPI_LUT_SEQ(
         kFLEXSPI_Command_READ_SDR, kFLEXSPI_4PAD, 0x01, kFLEXSPI_Command_STOP, kFLEXSPI_4PAD, 0),
 
     /* Fast read quad mode - SDR */
@@ -54,14 +55,14 @@ const uint32_t customLUT[FPGA_LUT_LENGTH] = {
         kFLEXSPI_Command_DUMMY_SDR, kFLEXSPI_4PAD, 0x01, kFLEXSPI_Command_READ_SDR, kFLEXSPI_4PAD, 0x04),
 
     /* Fast write quad mode - SDR */
-    [4 * FPGA_CMD_LUT_SEQ_IDX_READ_FAST_QUAD] = FLEXSPI_LUT_SEQ(
+    [4 * FPGA_CMD_LUT_SEQ_IDX_WRITE_FAST_QUAD] = FLEXSPI_LUT_SEQ(
         kFLEXSPI_Command_SDR, kFLEXSPI_4PAD, 0x11, kFLEXSPI_Command_RADDR_SDR, kFLEXSPI_4PAD, 0x18),
-    [4 * FPGA_CMD_LUT_SEQ_IDX_READ_FAST_QUAD + 1] = FLEXSPI_LUT_SEQ(
+    [4 * FPGA_CMD_LUT_SEQ_IDX_WRITE_FAST_QUAD + 1] = FLEXSPI_LUT_SEQ(
         kFLEXSPI_Command_DUMMY_SDR, kFLEXSPI_4PAD, 0x01, kFLEXSPI_Command_WRITE_SDR, kFLEXSPI_4PAD, 0x04),
 
 };
 
-void flexspi_clock_init()
+void flexspi_clock_init(void)
 {
 #if defined(XIP_EXTERNAL_FLASH) && (XIP_EXTERNAL_FLASH == 1)
     /* Switch to PLL2 for XIP to avoid hardfault during re-initialize clock. */
@@ -83,6 +84,8 @@ void flexspi_clock_init()
  */
 void debug_spi_init(void)
 {
+
+  FLEXSPI_Type *base = FLEXSPI;
 
   IOMUXC_SetPinMux(
       IOMUXC_GPIO_SD_00_FLEXSPI_B_SS0_B,      /* GPIO_00 is configured as FLEXSPI_B_SS0_B */
@@ -188,7 +191,7 @@ void debug_spi_init(void)
 	FLEXSPI_SetFlashConfig(base, &deviceconfig, kFLEXSPI_PortA1);
 
 	/* Update LUT table. */
-	FLEXSPI_UpdateLUT(base, 0, customLUT, CUSTOM_LUT_LENGTH);
+	FLEXSPI_UpdateLUT(base, 0, customLUT, FPGA_LUT_LENGTH);
 
 	/* Do software reset. */
 	FLEXSPI_SoftwareReset(base);

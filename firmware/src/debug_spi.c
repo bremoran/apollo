@@ -23,8 +23,8 @@
 // TODO: should these be unified into a single general buffer for requests,
 // for e.g. the smaller SAMD11?
 // 256 + 4 fits a SPI flash page and command
-uint8_t spi_in_buffer[256 + 4];
-uint8_t spi_out_buffer[256 + 4];
+extern uint32_t spi_in_buffer[64];
+extern uint32_t spi_out_buffer[64];
 
 
 /**
@@ -117,7 +117,7 @@ bool handle_debug_spi_send(uint8_t rhport, tusb_control_request_t const* request
 	return tud_control_xfer(rhport, request, spi_out_buffer, request->wLength);
 }
 
-
+#if 0
 bool handle_debug_spi_send_complete(uint8_t rhport, tusb_control_request_t const* request)
 {
 	// Use an active-low CS if wIndex isn't set; or an active-high one otherwise.
@@ -139,7 +139,7 @@ bool handle_debug_spi_send_complete(uint8_t rhport, tusb_control_request_t const
 
 	return true;
 }
-
+#endif
 
 /**
  * Request that changes the active LED pattern.

@@ -32,8 +32,8 @@ bool handle_flash_spi_send_complete(uint8_t rhport, tusb_control_request_t const
     return false;
 }
 
-extern uint8_t spi_in_buffer[];
-extern uint8_t spi_out_buffer[];
+uint32_t spi_in_buffer[64];
+uint32_t spi_out_buffer[64];
 
 bool handle_debug_spi_send_complete(uint8_t rhport, tusb_control_request_t const* request)
 {
@@ -43,7 +43,7 @@ bool handle_debug_spi_send_complete(uint8_t rhport, tusb_control_request_t const
         .cmdType       = kFLEXSPI_Write,
         .SeqNumber     = 1,
         .seqIndex      = FPGA_CMD_LUT_SEQ_IDX_WRITE_FIFO_FAST_QUAD,
-        .data          = &spi_out_buffer,
+        .data          = spi_out_buffer,
         .dataSize      = request->wLength,
 
     };
@@ -53,7 +53,7 @@ bool handle_debug_spi_send_complete(uint8_t rhport, tusb_control_request_t const
     );
     if (rc == kStatus_Success) {
         // TODO: Read status register first
-        xfer.data = &spi_in_buffer;
+        xfer.data = spi_in_buffer;
         xfer.cmdType = kFLEXSPI_Read;
         xfer.seqIndex = FPGA_CMD_LUT_SEQ_IDX_READ_FIFO_FAST_QUAD,
         rc = FLEXSPI_TransferBlocking(
