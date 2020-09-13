@@ -13,6 +13,8 @@
 #include <bsp/board.h>
 #include <apollo_board.h>
 
+#include "fsl_flexspi.h"
+#include "fsl_iomuxc.h"
 #include "led.h"
 #include "uart.h"
 
@@ -23,35 +25,6 @@
 // 256 + 4 fits a SPI flash page and command
 uint8_t spi_in_buffer[256 + 4];
 uint8_t spi_out_buffer[256 + 4];
-
-
-/**
- * Set up the debug SPI configuration.
- */
-void debug_spi_init(void)
-{
-	gpio_set_pin_function(PIN_SDI, GPIO_PIN_FUNCTION_OFF);
-	gpio_set_pin_function(PIN_SCK, GPIO_PIN_FUNCTION_OFF);
-	gpio_set_pin_function(PIN_SDO, GPIO_PIN_FUNCTION_OFF);
-	gpio_set_pin_function(PIN_FPGA_CS,  GPIO_PIN_FUNCTION_OFF);
-
-	gpio_set_pin_direction(PIN_SDI, GPIO_DIRECTION_OUT);
-	gpio_set_pin_direction(PIN_SCK, GPIO_DIRECTION_OUT);
-	gpio_set_pin_direction(PIN_SDO, GPIO_DIRECTION_IN);
-	gpio_set_pin_direction(PIN_FPGA_CS,  GPIO_DIRECTION_OUT);
-
-	gpio_set_pin_level(PIN_FPGA_CS, true);
-
-#ifdef _BOARD_HAS_CONFIG_FLASH_
-
-	// Keep the configuration flash line as an input, but apply
-	// a weak pull-up to keep the pin from being selected while idle.
-	gpio_set_pin_direction(PIN_FLASH_CS, GPIO_DIRECTION_IN);
-	gpio_set_pin_pull_mode(PIN_FLASH_CS, GPIO_PULL_UP);
-
-#endif
-
-}
 
 
 /**
