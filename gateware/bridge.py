@@ -25,26 +25,43 @@ class QSPItoOctal(Elaboratable):
         
         msn = Signal(4)
 
-        m.d.sync += self.oDAToutDV.eq(~self.qCS & dv)
+        m.d.comb += self.oDAToutDV.eq(~self.qCS & dv)
         
         with m.FSM() as fsm:
-            with m.state("IDLE"):
+            # with m.If(self.qCS):
+            #     m.d.sync += dv.eq(0)
+            #     m.next = "IDLE"
+            # with m.Else():
+            #     with m.State("IDLE"):
+            #         m.next = "MSN"
+            #         m.d.sync += dv.eq(0)
+            #     with m.State("MSN"):
+            #         m.next = "LSN"
+            #         m.d.sync += dv.eq(0)
+            #         m.d.sync += msn.eq(self.qDATin)
+            #     with m.State("LSN"):
+            #         m.next = "MSN"
+            #         m.d.sync += dv.eq(1)
+            #         m.d.sync += self.oDATout.eq(Cat(self.qDATin, msn))
+            with m.State("IDLE"):
                 m.d.sync += dv.eq(0)
                 with m.If(~self.qCS):
-                    m.next = "MSN"
-            with m.state("MSN"):
+                    m.next = "LSN"
+                    m.d.sync += msn.eq(self.qDATin)
+            with m.State("MSN"):
+                m.d.sync += dv.eq(0)
                 with m.If(~self.qCS):
                     m.next = "LSN"
                 with m.Else():
                     m.next = "IDLE"
                 m.d.sync += msn.eq(self.qDATin)
-            with m.state("LSN"):
+            with m.State("LSN"):
                 with m.If(~self.qCS):
                     m.next = "MSN"
                     m.d.sync += dv.eq(1)
                     m.d.sync += self.oDATout.eq(Cat(self.qDATin, msn))
                 with m.Else():
-                    m.state("IDLE")
+                    m.next = "IDLE"
                     m.d.sync += dv.eq(0)
         return m
 
